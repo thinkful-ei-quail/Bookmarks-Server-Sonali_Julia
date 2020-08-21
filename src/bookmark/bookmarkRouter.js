@@ -17,9 +17,9 @@ bookmarkRouter
   })
 
   .post(parser, (req, res) => {
-    const { title, website, description, rating } = req.body;
+    const { title, URL, description, rating } = req.body;
     const bookmarkEntry = req.body || {};
-    const requiredKeys = ["title", "website", "description", "rating"];
+    const requiredKeys = ["title", "URL", "description", "rating"];
     if (isNaN(Number(rating)) || Number(rating) > 5 || Number(rating) < 0) {
       return res.status(400).send("Invalid!");
     }
@@ -48,7 +48,7 @@ bookmarkRouter
     const newBookmark = {
       id,
       title,
-      website,
+      URL,
       description,
       rating,
     };
