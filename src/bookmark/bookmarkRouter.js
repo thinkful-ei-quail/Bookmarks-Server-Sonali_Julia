@@ -17,11 +17,11 @@ bookmarkRouter
   })
 
   .post(parser, (req, res) => {
-    const { title, url, description, rating } = req.body;
+    const { title, url, desc, rating } = req.body;
     const bookmarkEntry = req.body || {};
-    const requiredKeys = ["title", "url", "description", "rating"];
+    const requiredKeys = ["title", "url", "desc", "rating"];
     if (isNaN(Number(rating)) || Number(rating) > 5 || Number(rating) < 0) {
-      return res.status(400).send("Invalid!");
+      return res.status(400).send("Invalid.");
     }
     requiredKeys.forEach((key) => {
       if (
@@ -49,7 +49,7 @@ bookmarkRouter
       id,
       title,
       url,
-      description,
+      desc,
       rating,
     };
 

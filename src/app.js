@@ -5,7 +5,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const bookmarkRouter = require("./bookmark/bookmarkRouter");
 const app = express();
-const validateBearerToken = require("./validateBearerToken");
+// const validateBearerToken = require("./validateBearerToken");
 const NODE_ENV = require("./config");
 
 const morganOption = process.env.NODE_ENV === "production" ? "tiny" : "common";
@@ -14,7 +14,7 @@ app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
 
-app.use(validateBearerToken);
+// app.use(validateBearerToken);
 app.use(bookmarkRouter);
 
 app.use(function errorHandler(error, req, res, next) {
