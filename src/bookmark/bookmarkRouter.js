@@ -36,9 +36,6 @@ bookmarkRouter
     if (!rating) {
       return res.status(400).json({ message: "Rating required" });
     }
-    if (typeof rating != "number") {
-      return res.status(400).json({ message: "Rating must be a number" });
-    }
     if (rating > 5 || rating < 1) {
       return res
         .status(400)
