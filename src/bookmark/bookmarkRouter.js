@@ -18,7 +18,7 @@ bookmarkRouter
     res.json(bookmarks);
   })
 
-  .post(parser, (req, res) => {
+  .post(validatebearertoken, parser, (req, res) => {
     const { title, url, description, rating } = req.body;
     if (!title) {
       return res.status(400).json({ message: "Title required" });
