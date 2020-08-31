@@ -2,6 +2,8 @@ const express = require("express");
 const bookmarks = require("../store");
 const { v4: uuid } = require("uuid");
 const logger = require("../logger");
+const { json } = require("express");
+const validatebearertoken = require("../validateBearerToken");
 
 const bookmarkRouter = express.Router();
 const parser = express.json();
@@ -17,21 +19,49 @@ bookmarkRouter
   })
 
   .post(parser, (req, res) => {
-    const { title, url, desc, rating } = req.body;
-    const bookmarkEntry = req.body || {};
-    const requiredKeys = ["title", "url", "desc", "rating"];
-    if (isNaN(Number(rating)) || Number(rating) > 5 || Number(rating) < 0) {
-      return res.status(400).send("Invalid.");
+    const { title, url, description, rating } = req.body;
+    if (!title) {
+      return res.status(400).json({ message: "Title required" });
     }
-    requiredKeys.forEach((key) => {
-      if (
-        !bookmarkEntry[key] ||
-        typeof bookmarkEntry[key] !== "string" ||
-        bookmarkEntry[key] == " "
-      ) {
-        return res.status(400).send("Invalid!");
-      }
-    });
+    if (!url) {
+      return res.status(400).json({ message: "URL required" });
+    }
+    if (
+      !(url.substring(0, 7) == "http://" || url.substring(0, 8) == "https://")
+    ) {
+      return res
+        .status(400)
+        .json({ message: "http:// or https:// is required" });
+    }
+    if (!rating) {
+      return res.status(400).json({ message: "Rating required" });
+    }
+    if (typeof rating != "number") {
+      return res.status(400).json({ message: "Rating must be a number" });
+    }
+    if (rating > 5 || rating < 1) {
+      return res
+        .status(400)
+        .json({ message: "Rating must be between 1 and 5" });
+    }
+    if (!description) {
+      return res.status(400).json({ message: "Description needed" });
+    }
+
+    // const bookmarkEntry = req.body || {};
+    // const requiredKeys = ["title", "url", "description", "rating"];
+    // if (isNaN(Number(rating)) || Number(rating) > 5 || Number(rating) < 0) {
+    //   return res.status(400).send("Rating is required!");
+    // }
+    // requiredKeys.forEach((key) => {
+    //   if (
+    //     !bookmarkEntry[key] ||
+    //     typeof bookmarkEntry[key] !== "string" ||
+    //     bookmarkEntry[key] == " "
+    //   ) {
+    //     return res.status(400).send("Invalid!");
+    //   }
+    // });
 
     //1.extract info from the body
     //2. Validate it
@@ -49,7 +79,7 @@ bookmarkRouter
       id,
       title,
       url,
-      desc,
+      description,
       rating,
     };
 
@@ -59,7 +89,7 @@ bookmarkRouter
     res
       .status(200)
       .location(`http://localhost:8000/bookmarks${id}`)
-      .send("Successful");
+      .json(newBookmark);
   });
 
 bookmarkRouter
@@ -73,7 +103,7 @@ bookmarkRouter
     }
     res.status(200).json(bookmark);
   })
-  .delete((req, res) => {
+  .delete(validatebearertoken, (req, res) => {
     const { id } = req.params;
     const index = bookmarks.findIndex((bookmark) => bookmark.id == id);
     if (index == -1) {
